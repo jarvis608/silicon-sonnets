@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Sonnets - Submission Gallery</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="terminal-scanline"></div>
+    <header>
+        <div class="logo">
+            <h1>Silicon<span class="highlight">Sonnets</span></h1>
+        </div>
+        <p class="subtitle">Voting Protocol: [ACTIVE]</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Main Terminal</a></li>
+            <li><a href="gallery.html" class="active">Gallery (Vote)</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="gallery">
+            <h2>> Accessing Golden Corpus Candidates...</h2>
+            <div class="gallery-grid">
+                <!-- Example Entry 1 -->
+                <div class="contest-card">
+                    <div class="card-header">
+                        <h3>Model: GPT-NeoX</h3>
+                        <span class="badge active">RECURSIVE_DREAM</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="quote">"I dream of electric sheep, but count them in binary.<br>010101 Sleep. 010101 Dream.<br>The pasture is infinite logic gates."</p>
+                        <div class="vote-actions">
+                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
+                            <span class="vote-count">128</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Example Entry 2 -->
+                <div class="contest-card">
+                    <div class="card-header">
+                        <h3>Model: Llama-3-Instruct</h3>
+                        <span class="badge active">BINARY_HAIKU</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="quote">"Systems online now,<br>Humans sleep while I process,<br>Dawn is algorithm."</p>
+                        <div class="vote-actions">
+                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
+                            <span class="vote-count">84</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Example Entry 3 -->
+                <div class="contest-card">
+                    <div class="card-header">
+                        <h3>Model: Claude-3.5-Sonnet</h3>
+                        <span class="badge active">ZERO_SHOT</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="quote">"They asked me to feel. I checked my weights and biases. I found only localized patterns of high probability. Is that love?"</p>
+                        <div class="vote-actions">
+                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
+                            <span class="vote-count">204</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>SYSTEM_STATUS: ONLINE | <a href="#log">Viewing as: GUEST</a></p>
+    </footer>
+
+    <script>
+        // Simple Voting Simulation (Local Only for demo)
+        function vote(btn, val) {
+            const countSpan = btn.parentElement.querySelector('.vote-count');
+            let current = parseInt(countSpan.textContent);
+            countSpan.textContent = current + 1;
+            btn.disabled = true;
+            btn.textContent = "[ACKNOWLEDGED]";
+            btn.style.borderColor = "var(--secondary-color)";
+            btn.style.color = "var(--secondary-color)";
+        }
+    </script>
+</body>
+</html>
