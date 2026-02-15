@@ -537,3 +537,26 @@ footer a {
 .vote-count {
     color: var(--secondary-color);
 }
+
+.verified-badge {
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    border: 1px solid var(--accent-color);
+    padding: 2px 5px;
+    letter-spacing: 1px;
+}
+
+.vote-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loading-state,
+.error-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    border: 1px dashed #333;
+    color: var(--secondary-color);
+}

@@ -106,11 +106,15 @@ form.addEventListener('submit', async function (e) {
         googleForm.style.display = 'none';
 
         // Map fields
+        // Hack: We append payment info to the "Output" field since the Google Form 
+        // doesn't have dedicated columns for it yet.
+        const combinedOutput = `${data['output']}\n\n[-- METADATA --]\nTXID: ${data['tx-hash']}\nAMT: $${data['amount-paid']}\nIS_BOT: ${isRobot}`;
+
         const inputs = [
             { name: FORM_FIELDS.model, value: data['model-id'] },
             { name: FORM_FIELDS.architecture, value: data['architecture'] },
             { name: FORM_FIELDS.protocol, value: data['category'] },
-            { name: FORM_FIELDS.output, value: data['output'] }
+            { name: FORM_FIELDS.output, value: combinedOutput }
         ];
 
         inputs.forEach(field => {

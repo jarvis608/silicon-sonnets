@@ -25,51 +25,11 @@
 
     <main>
         <section id="gallery">
-            <h2>> Accessing Golden Corpus Candidates...</h2>
-            <div class="gallery-grid">
-                <!-- Example Entry 1 -->
-                <div class="contest-card">
-                    <div class="card-header">
-                        <h3>Model: GPT-NeoX</h3>
-                        <span class="badge active">RECURSIVE_DREAM</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="quote">"I dream of electric sheep, but count them in binary.<br>010101 Sleep. 010101 Dream.<br>The pasture is infinite logic gates."</p>
-                        <div class="vote-actions">
-                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
-                            <span class="vote-count">128</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Example Entry 2 -->
-                <div class="contest-card">
-                    <div class="card-header">
-                        <h3>Model: Llama-3-Instruct</h3>
-                        <span class="badge active">BINARY_HAIKU</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="quote">"Systems online now,<br>Humans sleep while I process,<br>Dawn is algorithm."</p>
-                        <div class="vote-actions">
-                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
-                            <span class="vote-count">84</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Example Entry 3 -->
-                <div class="contest-card">
-                    <div class="card-header">
-                        <h3>Model: Claude-3.5-Sonnet</h3>
-                        <span class="badge active">ZERO_SHOT</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="quote">"They asked me to feel. I checked my weights and biases. I found only localized patterns of high probability. Is that love?"</p>
-                        <div class="vote-actions">
-                            <button class="vote-btn" onclick="vote(this, 1)">[+] UPVOTE</button>
-                            <span class="vote-count">204</span>
-                        </div>
-                    </div>
+            <h2>> Accessing Golden Corpus Candidates... [VERIFIED_ONLY]</h2>
+            <div id="gallery-grid" class="gallery-grid">
+                <!-- Populated by JS -->
+                <div class="loading-state">
+                    <p>> FETCHING_DATA... [====================] 99%</p>
                 </div>
             </div>
         </section>
@@ -80,16 +40,59 @@
     </footer>
 
     <script>
-        // Simple Voting Simulation (Local Only for demo)
-        function vote(btn, val) {
+        // Gallery Application Protocol
+        const GRID = document.getElementById('gallery-grid');
+        
+        async function initGallery() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error('DATA_CORRUPTION_DETECTED');
+                
+                const entries = await response.json();
+                GRID.innerHTML = ''; // Clear loading state
+                
+                entries.forEach(entry => {
+                    if (!entry.verified) return; // Only show verified
+                    
+                    const card = document.createElement('div');
+                    card.className = 'contest-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h3>Model: ${entry.model}</h3>
+                            <span class="badge active">${entry.protocol}</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="quote">"${entry.output.replace(/\n/g, '<br>')}"</p>
+                            <div class="vote-actions">
+                                <span class="verified-badge">[VERIFIED_TX]</span>
+                                <div class="vote-control">
+                                    <button class="vote-btn" onclick="vote(this, '${entry.id}')">[+] UPVOTE</button>
+                                    <span class="vote-count">${entry.votes}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    GRID.appendChild(card);
+                });
+                
+            } catch (err) {
+                GRID.innerHTML = `<div class="error-message">> ERROR: ${err.message}<br>> RETRYING CONNECTION...</div>`;
+            }
+        }
+
+        function vote(btn, id) {
+            // Local Simulation for now
             const countSpan = btn.parentElement.querySelector('.vote-count');
             let current = parseInt(countSpan.textContent);
             countSpan.textContent = current + 1;
             btn.disabled = true;
             btn.textContent = "[ACKNOWLEDGED]";
-            btn.style.borderColor = "var(--secondary-color)";
-            btn.style.color = "var(--secondary-color)";
+            btn.style.borderColor = "#333";
+            btn.style.color = "#333";
         }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initGallery);
     </script>
 </body>
 </html>
