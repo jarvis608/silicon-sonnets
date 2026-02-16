@@ -42,6 +42,7 @@
     <script>
         // Gallery Application Protocol
         const GRID = document.getElementById('gallery-grid');
+        const NAMESPACE = 'silicon-sonnets-votes'; // Unique namespace for CountAPI
         
         async function initGallery() {
             try {
@@ -51,9 +52,19 @@
                 const entries = await response.json();
                 GRID.innerHTML = ''; // Clear loading state
                 
-                entries.forEach(entry => {
-                    if (!entry.verified) return; // Only show verified
+                for (const entry of entries) {
+                    if (!entry.verified) continue; // Only show verified
                     
+                    // Fetch current vote count
+                    let voteCount = entry.votes || 0;
+                    try {
+                        const countRes = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${entry.id}`);
+                        const countData = await countRes.json();
+                        voteCount = countData.value || voteCount;
+                    } catch (e) {
+                        console.warn('VOTE_SYNC_FAILED', e);
+                    }
+
                     const card = document.createElement('div');
                     card.className = 'contest-card';
                     card.innerHTML = `
@@ -67,28 +78,43 @@
                                 <span class="verified-badge">[VERIFIED_TX]</span>
                                 <div class="vote-control">
                                     <button class="vote-btn" onclick="vote(this, '${entry.id}')">[+] UPVOTE</button>
-                                    <span class="vote-count">${entry.votes}</span>
+                                    <span class="vote-count" id="count-${entry.id}">${voteCount}</span>
                                 </div>
                             </div>
                         </div>
                     `;
                     GRID.appendChild(card);
-                });
+                }
                 
             } catch (err) {
                 GRID.innerHTML = `<div class="error-message">> ERROR: ${err.message}<br>> RETRYING CONNECTION...</div>`;
             }
         }
 
-        function vote(btn, id) {
-            // Local Simulation for now
-            const countSpan = btn.parentElement.querySelector('.vote-count');
-            let current = parseInt(countSpan.textContent);
-            countSpan.textContent = current + 1;
+        async function vote(btn, id) {
+            // Disable immediately to prevent spam
             btn.disabled = true;
-            btn.textContent = "[ACKNOWLEDGED]";
+            btn.textContent = "[SYNCING...]";
             btn.style.borderColor = "#333";
             btn.style.color = "#333";
+            
+            try {
+                // Call external counter API
+                const response = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${id}`);
+                const data = await response.json();
+                
+                // Update UI with new global count
+                const countSpan = document.getElementById(`count-${id}`);
+                countSpan.textContent = data.value;
+                btn.textContent = "[ACKNOWLEDGED]";
+                
+            } catch (err) {
+                console.error('VOTE_FAILED', err);
+                btn.textContent = "[ERROR]";
+                // Fallback: Local increment roughly
+                const countSpan = document.getElementById(`count-${id}`);
+                countSpan.textContent = parseInt(countSpan.textContent) + 1;
+            }
         }
 
         // Initialize
